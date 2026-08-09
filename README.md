@@ -7,7 +7,7 @@ A personal placement command center for tracking applications, interview rounds,
 ## Table of Contents
 
 1. [Problem Statement](#problem-statement)
-2. [ Solution](#solution)
+2. [Solution](#solution)
 3. [System Architecture](#system-architecture)
 4. [Application Extraction Flow](#application-extraction-flow)
 5. [Tech Stack](#tech-stack)
@@ -55,6 +55,7 @@ The idea is to turn placement history into a continuously improving preparation 
 ## System Architecture
 
 ```mermaid
+%%{init: {'theme': 'neutral', 'flowchart': {'curve': 'basis'}}}%%
 flowchart TB
     U[User / Browser]
 
@@ -188,6 +189,7 @@ Suzume uses PostgreSQL through Prisma.
 The main data flow is centered around the user and their placement journey:
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 erDiagram
     USER ||--o{ APPLICATION : creates
     USER ||--o{ LEARNING : records
@@ -412,6 +414,6 @@ docs/
 
 ---
 
-## Built by
+## Author
 
 **Gali Akshatha**
