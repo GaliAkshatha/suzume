@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../config/prisma";
 import { AppError } from "../../middleware/AppError";
 import { CreatePreparationSourceInput } from "@suzume/validation";
@@ -36,7 +37,11 @@ export async function syncSource(userId: string, id: string) {
     const metrics = await provider.fetchActivity(source.profileUrl);
     return prisma.preparationSource.update({
       where: { id },
-      data: { metrics, lastSyncedAt: new Date(), lastSyncError: null },
+      data: {
+        metrics: metrics as unknown as Prisma.InputJsonValue,
+        lastSyncedAt: new Date(),
+        lastSyncError: null,
+      },
     });
   } catch (err) {
     // Previously-imported metrics are intentionally left untouched so a

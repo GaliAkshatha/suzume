@@ -41,7 +41,7 @@ export const leetcodeProvider: PreparationSourceProvider = {
       throw new Error(`LeetCode responded with status ${response.status}`);
     }
 
-    const payload = await response.json();
+    const payload = (await response.json()) as any;
     const stats = payload?.data?.matchedUser?.submitStatsGlobal?.acSubmissionNum as
       | Array<{ difficulty: string; count: number }>
       | undefined;
