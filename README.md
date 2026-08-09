@@ -87,28 +87,11 @@ flowchart TB
 
 ## Application Extraction Flow
 
-Suzume can convert placement information from pasted text into structured application data.
+Suzume follows a modular full-stack architecture with a React-based frontend, an Express API, shared packages, Prisma ORM, and PostgreSQL.
 
-```text
-Placement Email / Notice
-          │
-          ▼
-      Paste Text
-          │
-          ▼
-      Extraction
-          │
-          ▼
- Structured Application
-          │
-          ▼
-     Review / Edit
-          │
-          ▼
-        Save
-```
-
-Information such as company, role, location, dates, internship details, stipend, CTC, PPO information, and source can be captured from the supplied text.
+<p align="center">
+  <img src="docs/images/suzume-architecture.png" alt="Suzume Application Architecture" width="100%">
+</p>
 
 ---
 
@@ -414,6 +397,6 @@ docs/
 
 ---
 
-## Built By
-
-**Gali Akshatha**
+<p align="center">
+  Built by <a href="https://github.com/GaliAkshatha">Akshatha</a>
+</p>
