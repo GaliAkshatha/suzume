@@ -1,0 +1,358 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  preparationSetupCompletedAt DateTime? @map("preparation_setup_completed_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  applications         Application[]
+  learnings            Learning[]
+  preparationProgress  PreparationProgress[]
+  preparationTopics    PreparationTopic[]
+  preparationLogs      PreparationLog[]
+  preparationSources   PreparationSource[]
+  refreshTokens        RefreshToken[]
+  passwordResetTokens  PasswordResetToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @map("token_hash")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  revokedAt DateTime? @map("revoked_at")
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  usedAt    DateTime? @map("used_at")
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+model Company {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  website     String?
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  applications Application[]
+
+  @@map("companies")
+}
+
+enum ApplicationStatus {
+  INTERESTED
+  APPLIED
+  SHORTLISTED
+  ASSESSMENT
+  INTERVIEW
+  OFFER
+  REJECTED
+  WITHDRAWN
+}
+
+enum SourceType {
+  MANUAL
+  PASTED_TEXT
+  GMAIL
+  WHATSAPP
+}
+
+enum PpoType {
+  NONE
+  PPO
+  PERFORMANCE_BASED_PPO
+}
+
+model Application {
+  id              String            @id @default(uuid())
+  userId          String            @map("user_id")
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId       String            @map("company_id")
+  company         Company           @relation(fields: [companyId], references: [id])
+  role            String
+  location        String?
+  applicationDate DateTime?         @map("application_date")
+  deadline        DateTime?
+  internship      Boolean           @default(false)
+  ppoType         PpoType           @default(NONE)
+  stipend         Decimal?          @db.Decimal(12, 2)
+  ctc             Decimal?          @db.Decimal(12, 2)
+  status          ApplicationStatus @default(INTERESTED)
+  notes           String?
+  source          SourceType        @default(MANUAL)
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  rounds Round[]
+
+  @@index([userId])
+  @@index([userId, status])
+  @@map("applications")
+}
+
+enum RoundType {
+  APPLICATION_SUBMITTED
+  SHORTLISTED
+  ONLINE_ASSESSMENT
+  TECHNICAL_INTERVIEW
+  HR_ROUND
+  MANAGERIAL_ROUND
+  FINAL_RESULT
+  OTHER
+}
+
+enum RoundStatus {
+  UPCOMING
+  PREPARING
+  COMPLETED
+  CANCELLED
+}
+
+enum RoundMode {
+  ONLINE
+  OFFLINE
+  PHONE
+  TAKE_HOME
+}
+
+model Round {
+  id            String      @id @default(uuid())
+  applicationId String      @map("application_id")
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  type          RoundType
+  title         String
+  scheduledAt   DateTime?   @map("scheduled_at")
+  duration      Int?
+  mode          RoundMode?
+  status        RoundStatus @default(UPCOMING)
+  notes         String?
+  source        SourceType  @default(MANUAL)
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  experience Experience?
+
+  @@index([applicationId])
+  @@index([scheduledAt])
+  @@map("rounds")
+}
+
+model Experience {
+  id                 String   @id @default(uuid())
+  roundId            String   @unique @map("round_id")
+  round              Round    @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  summary            String?
+  whatWentWell       String?  @map("what_went_well")
+  whatWentBadly      String?  @map("what_went_badly")
+  confidence         Int?
+  overallReflection  String?  @map("overall_reflection")
+  topicsCovered      String[] @default([]) @map("topics_covered")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  questions Question[]
+
+  @@map("experiences")
+}
+
+enum QuestionCategory {
+  DSA
+  DBMS
+  SQL
+  OS
+  OOP
+  SYSTEM_DESIGN
+  PROJECTS
+  BEHAVIORAL
+  OTHER
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum Performance {
+  POOR
+  AVERAGE
+  GOOD
+  EXCELLENT
+}
+
+model Question {
+  id           String            @id @default(uuid())
+  experienceId String            @map("experience_id")
+  experience   Experience        @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  question     String
+  category     QuestionCategory
+  topic        String?
+  difficulty   Difficulty?
+  performance  Performance?
+  notes        String?
+  createdAt    DateTime          @default(now()) @map("created_at")
+
+  @@index([experienceId])
+  @@index([category])
+  @@map("questions")
+}
+
+enum LearningCategory {
+  COMMUNICATION
+  TECHNICAL
+  TIME_MANAGEMENT
+  PROBLEM_SOLVING
+  BEHAVIORAL
+  OTHER
+}
+
+enum LearningPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum LearningStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+}
+
+model Learning {
+  id          String           @id @default(uuid())
+  userId      String           @map("user_id")
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  category    LearningCategory
+  priority    LearningPriority @default(MEDIUM)
+  sourceType  String?          @map("source_type")
+  sourceId    String?          @map("source_id")
+  status      LearningStatus   @default(OPEN)
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  actionItems ActionItem[]
+
+  @@index([userId])
+  @@index([userId, category])
+  @@map("learnings")
+}
+
+enum ActionItemStatus {
+  PENDING
+  IN_PROGRESS
+  DONE
+}
+
+model ActionItem {
+  id          String            @id @default(uuid())
+  learningId  String            @map("learning_id")
+  learning    Learning          @relation(fields: [learningId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  status      ActionItemStatus  @default(PENDING)
+  dueDate     DateTime?         @map("due_date")
+  completedAt DateTime?         @map("completed_at")
+  createdAt   DateTime          @default(now()) @map("created_at")
+
+  @@index([learningId])
+  @@map("action_items")
+}
+
+model PreparationTopic {
+  id       String  @id @default(uuid())
+  name     String
+  category String
+  parentId String? @map("parent_id")
+  parent   PreparationTopic?  @relation("TopicHierarchy", fields: [parentId], references: [id])
+  children PreparationTopic[] @relation("TopicHierarchy")
+  userId   String? @map("user_id")
+  user     User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isCustom Boolean @default(false) @map("is_custom")
+
+  progress PreparationProgress[]
+  logs     PreparationLog[]
+
+  @@unique([name, parentId, userId])
+  @@map("preparation_topics")
+}
+
+model PreparationProgress {
+  id               String            @id @default(uuid())
+  userId           String            @map("user_id")
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topicId          String            @map("topic_id")
+  topic            PreparationTopic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  initialLevel     Int?              @map("initial_level")
+  questionsSolved  Int               @default(0) @map("questions_solved")
+  questionsTotal   Int               @default(0) @map("questions_total")
+  confidence       Int               @default(0)
+  lastPracticed    DateTime?         @map("last_practiced")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+
+  @@unique([userId, topicId])
+  @@map("preparation_progress")
+}
+
+model PreparationLog {
+  id              String            @id @default(uuid())
+  userId          String            @map("user_id")
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topicId         String?           @map("topic_id")
+  topic           PreparationTopic? @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  date            DateTime          @db.Date
+  questionsSolved Int               @default(0) @map("questions_solved")
+  durationMinutes Int?              @map("duration_minutes")
+  notes           String?
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  @@index([userId, date])
+  @@map("preparation_logs")
+}
+
+model PreparationSource {
+  id            String    @id @default(uuid())
+  userId        String    @map("user_id")
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider      String
+  profileUrl    String    @map("profile_url")
+  metrics       Json?
+  lastSyncedAt  DateTime? @map("last_synced_at")
+  lastSyncError String?   @map("last_sync_error")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@unique([userId, provider])
+  @@map("preparation_sources")
+}

@@ -1,0 +1,7 @@
+{
+  "buildCommand": "cd ../.. && corepack enable && pnpm install --frozen-lockfile && pnpm --filter @suzume/web build",
+  "outputDirectory": "dist",
+  "installCommand": "echo skip-default-install",
+  "framework": "vite",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}

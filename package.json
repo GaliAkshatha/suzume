@@ -1,0 +1,20 @@
+{
+  "name": "suzume",
+  "private": true,
+  "version": "1.0.0",
+  "description": "PlacementOS - Personal Placement Journey & Learning Tracker",
+  "scripts": {
+    "dev": "pnpm --parallel --filter ./apps/* dev",
+    "dev:api": "pnpm --filter @suzume/api dev",
+    "dev:web": "pnpm --filter @suzume/web dev",
+    "build": "pnpm --filter @suzume/api build && pnpm --filter @suzume/web build",
+    "db:migrate": "pnpm --filter @suzume/api db:migrate",
+    "db:seed": "pnpm --filter @suzume/api db:seed",
+    "db:generate": "pnpm --filter @suzume/api db:generate",
+    "db:studio": "pnpm --filter @suzume/api db:studio"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=18"
+  }
+}
