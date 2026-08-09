@@ -414,6 +414,6 @@ docs/
 
 ---
 
-## Author
+## Built By
 
 **Gali Akshatha**
