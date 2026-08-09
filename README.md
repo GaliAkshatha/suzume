@@ -7,7 +7,7 @@ A personal placement command center for tracking applications, interview rounds,
 ## Table of Contents
 
 1. [Problem Statement](#problem-statement)
-2. [Our Solution](#our-solution)
+2. [ Solution](#solution)
 3. [System Architecture](#system-architecture)
 4. [Application Extraction Flow](#application-extraction-flow)
 5. [Tech Stack](#tech-stack)
@@ -34,7 +34,7 @@ Placement preparation becomes difficult to manage when information is spread acr
 
 ---
 
-## Our Solution
+## Solution
 
 Suzume connects the complete placement workflow into a single system.
 
@@ -415,5 +415,3 @@ docs/
 ## Built by
 
 **Gali Akshatha**
-
-[GitHub](https://github.com/GaliAkshatha)
