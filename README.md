@@ -54,44 +54,38 @@ The idea is to turn placement history into a continuously improving preparation 
 
 ## System Architecture
 
-```mermaid
-%%{init: {'theme': 'neutral', 'flowchart': {'curve': 'basis'}}}%%
-flowchart TB
-    U[User / Browser]
-
-    subgraph WEB[Frontend]
-        R[React + TypeScript + Vite]
-        C[Components & Pages]
-        S[API Services]
-        R --> C --> S
-    end
-
-    subgraph API[Backend]
-        E[Express API]
-        M[Auth Middleware]
-        CT[Controllers]
-        SV[Services / Modules]
-        P[Prisma ORM]
-
-        E --> M --> CT --> SV --> P
-    end
-
-    DB[(PostgreSQL / Supabase)]
-
-    U --> R
-    S --> E
-    P --> DB
-```
-
----
-
-## Application Extraction Flow
-
 Suzume follows a modular full-stack architecture with a React-based frontend, an Express API, shared packages, Prisma ORM, and PostgreSQL.
 
 <p align="center">
   <img src="docs/images/suzume-architecture.png" alt="Suzume Application Architecture" width="100%">
 </p>
+
+---
+
+## Application Extraction Flow
+
+Suzume can convert placement information from pasted text into structured application data.
+
+```text
+Placement Email / Notice
+          │
+          ▼
+      Paste Text
+          │
+          ▼
+      Extraction
+          │
+          ▼
+ Structured Application
+          │
+          ▼
+     Review / Edit
+          │
+          ▼
+        Save
+```
+
+Information such as company, role, location, dates, internship details, stipend, CTC, PPO information, and source can be captured from the supplied text.
 
 ---
 
